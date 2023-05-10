@@ -1,0 +1,6 @@
+
+fpga/db/
+
+fpga/incremental_db/
+
+*.qws
