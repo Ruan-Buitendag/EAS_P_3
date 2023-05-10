@@ -7,7 +7,8 @@
    <irq preferredWidth="63" />
   </columns>
  </systemtable>
- <library expandedCategories="Library,Project" />
- <window width="1936" height="1056" x="-8" y="-8" />
+ <library
+   expandedCategories="Library/Processors and Peripherals,Project,Library/Interface Protocols,Library/Interface Protocols/PCI Express/QSYS Example Designs,Library,Library/Processors and Peripherals/Peripherals,Library/Interface Protocols/PCI Express" />
+ <window width="1920" height="1040" x="0" y="0" />
  <hdlexample language="VERILOG" />
 </preferences>

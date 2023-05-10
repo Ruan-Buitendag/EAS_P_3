@@ -9,6 +9,22 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
+   element boot_loader
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+   }
+   element boot_loader.s1
+   {
+      datum baseAddress
+      {
+         value = "65600";
+         type = "String";
+      }
+   }
    element clk_0
    {
       datum _sortIndex
@@ -47,6 +63,22 @@
       {
          value = "1";
          type = "int";
+      }
+   }
+   element instruction
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+   }
+   element instruction.s1
+   {
+      datum baseAddress
+      {
+         value = "65664";
+         type = "String";
       }
    }
    element intr_capturer_0
@@ -154,6 +186,11 @@
  <parameter name="timeStamp" value="0" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
+ <interface
+   name="boot_loader_external_connection"
+   internal="boot_loader.external_connection"
+   type="conduit"
+   dir="end" />
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
  <interface
    name="hps_0_f2h_cold_reset_req"
@@ -182,8 +219,31 @@
    dir="start" />
  <interface name="hps_0_h2f_user0_clock" internal="hps_0.h2f_user0_clock" />
  <interface name="hps_0_hps_io" internal="hps_0.hps_io" type="conduit" dir="end" />
+ <interface
+   name="instruction_external_connection"
+   internal="instruction.external_connection"
+   type="conduit"
+   dir="end" />
  <interface name="memory" internal="hps_0.memory" type="conduit" dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
+ <module
+   name="boot_loader"
+   kind="altera_avalon_pio"
+   version="20.1"
+   enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="1" />
+ </module>
  <module name="clk_0" kind="clock_source" version="20.1" enabled="1">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
@@ -749,6 +809,24 @@
   <parameter name="USE_PLI" value="0" />
  </module>
  <module
+   name="instruction"
+   kind="altera_avalon_pio"
+   version="20.1"
+   enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="11" />
+ </module>
+ <module
    name="intr_capturer_0"
    kind="intr_capturer"
    version="100.99.98.97"
@@ -844,6 +922,24 @@
  <connection
    kind="avalon"
    version="20.1"
+   start="hps_0.h2f_lw_axi_master"
+   end="instruction.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00010080" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="hps_0.h2f_lw_axi_master"
+   end="boot_loader.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00010040" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
    start="fpga_only_master.master"
    end="jtag_uart.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
@@ -887,6 +983,24 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
+   kind="avalon"
+   version="20.1"
+   start="fpga_only_master.master"
+   end="instruction.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00010080" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="fpga_only_master.master"
+   end="boot_loader.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00010040" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
    kind="clock"
    version="20.1"
    start="clk_0.clk"
@@ -898,6 +1012,8 @@
    start="clk_0.clk"
    end="fpga_only_master.clk" />
  <connection kind="clock" version="20.1" start="clk_0.clk" end="jtag_uart.clk" />
+ <connection kind="clock" version="20.1" start="clk_0.clk" end="instruction.clk" />
+ <connection kind="clock" version="20.1" start="clk_0.clk" end="boot_loader.clk" />
  <connection
    kind="clock"
    version="20.1"
@@ -957,6 +1073,16 @@
    version="20.1"
    start="clk_0.clk_reset"
    end="jtag_uart.reset" />
+ <connection
+   kind="reset"
+   version="20.1"
+   start="clk_0.clk_reset"
+   end="instruction.reset" />
+ <connection
+   kind="reset"
+   version="20.1"
+   start="clk_0.clk_reset"
+   end="boot_loader.reset" />
  <connection
    kind="reset"
    version="20.1"
