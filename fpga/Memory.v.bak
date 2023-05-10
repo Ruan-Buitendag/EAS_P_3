@@ -1,0 +1,7 @@
+Module Memory(
+
+	input [7:0] WriteToMemory,
+	output [7:0] ReadFromMemory,
+	input [4:0] Address
+
+);
