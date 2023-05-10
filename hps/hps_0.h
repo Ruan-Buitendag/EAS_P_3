@@ -64,129 +64,55 @@
 #define SYSID_QSYS_SPAN 8
 #define SYSID_QSYS_END 0x10007
 #define SYSID_QSYS_ID 2899645186
-#define SYSID_QSYS_TIMESTAMP 1682746811
+#define SYSID_QSYS_TIMESTAMP 1683733100
 
 /*
- * Macros for device 'led_pio', class 'altera_avalon_pio'
- * The macros are prefixed with 'LED_PIO_'.
+ * Macros for device 'boot_loader', class 'altera_avalon_pio'
+ * The macros are prefixed with 'BOOT_LOADER_'.
  * The prefix is the slave descriptor.
  */
-#define LED_PIO_COMPONENT_TYPE altera_avalon_pio
-#define LED_PIO_COMPONENT_NAME led_pio
-#define LED_PIO_BASE 0x10040
-#define LED_PIO_SPAN 16
-#define LED_PIO_END 0x1004f
-#define LED_PIO_BIT_CLEARING_EDGE_REGISTER 0
-#define LED_PIO_BIT_MODIFYING_OUTPUT_REGISTER 0
-#define LED_PIO_CAPTURE 0
-#define LED_PIO_DATA_WIDTH 8
-#define LED_PIO_DO_TEST_BENCH_WIRING 0
-#define LED_PIO_DRIVEN_SIM_VALUE 0
-#define LED_PIO_EDGE_TYPE NONE
-#define LED_PIO_FREQ 50000000
-#define LED_PIO_HAS_IN 0
-#define LED_PIO_HAS_OUT 1
-#define LED_PIO_HAS_TRI 0
-#define LED_PIO_IRQ_TYPE NONE
-#define LED_PIO_RESET_VALUE 0
+#define BOOT_LOADER_COMPONENT_TYPE altera_avalon_pio
+#define BOOT_LOADER_COMPONENT_NAME boot_loader
+#define BOOT_LOADER_BASE 0x10040
+#define BOOT_LOADER_SPAN 16
+#define BOOT_LOADER_END 0x1004f
+#define BOOT_LOADER_BIT_CLEARING_EDGE_REGISTER 0
+#define BOOT_LOADER_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define BOOT_LOADER_CAPTURE 0
+#define BOOT_LOADER_DATA_WIDTH 1
+#define BOOT_LOADER_DO_TEST_BENCH_WIRING 0
+#define BOOT_LOADER_DRIVEN_SIM_VALUE 0
+#define BOOT_LOADER_EDGE_TYPE NONE
+#define BOOT_LOADER_FREQ 50000000
+#define BOOT_LOADER_HAS_IN 0
+#define BOOT_LOADER_HAS_OUT 1
+#define BOOT_LOADER_HAS_TRI 0
+#define BOOT_LOADER_IRQ_TYPE NONE
+#define BOOT_LOADER_RESET_VALUE 0
 
 /*
- * Macros for device 'dipsw_pio', class 'altera_avalon_pio'
- * The macros are prefixed with 'DIPSW_PIO_'.
+ * Macros for device 'instruction', class 'altera_avalon_pio'
+ * The macros are prefixed with 'INSTRUCTION_'.
  * The prefix is the slave descriptor.
  */
-#define DIPSW_PIO_COMPONENT_TYPE altera_avalon_pio
-#define DIPSW_PIO_COMPONENT_NAME dipsw_pio
-#define DIPSW_PIO_BASE 0x10080
-#define DIPSW_PIO_SPAN 16
-#define DIPSW_PIO_END 0x1008f
-#define DIPSW_PIO_IRQ 0
-#define DIPSW_PIO_BIT_CLEARING_EDGE_REGISTER 1
-#define DIPSW_PIO_BIT_MODIFYING_OUTPUT_REGISTER 0
-#define DIPSW_PIO_CAPTURE 1
-#define DIPSW_PIO_DATA_WIDTH 4
-#define DIPSW_PIO_DO_TEST_BENCH_WIRING 0
-#define DIPSW_PIO_DRIVEN_SIM_VALUE 0
-#define DIPSW_PIO_EDGE_TYPE ANY
-#define DIPSW_PIO_FREQ 50000000
-#define DIPSW_PIO_HAS_IN 1
-#define DIPSW_PIO_HAS_OUT 0
-#define DIPSW_PIO_HAS_TRI 0
-#define DIPSW_PIO_IRQ_TYPE EDGE
-#define DIPSW_PIO_RESET_VALUE 0
-
-/*
- * Macros for device 'button_pio', class 'altera_avalon_pio'
- * The macros are prefixed with 'BUTTON_PIO_'.
- * The prefix is the slave descriptor.
- */
-#define BUTTON_PIO_COMPONENT_TYPE altera_avalon_pio
-#define BUTTON_PIO_COMPONENT_NAME button_pio
-#define BUTTON_PIO_BASE 0x100c0
-#define BUTTON_PIO_SPAN 16
-#define BUTTON_PIO_END 0x100cf
-#define BUTTON_PIO_IRQ 1
-#define BUTTON_PIO_BIT_CLEARING_EDGE_REGISTER 1
-#define BUTTON_PIO_BIT_MODIFYING_OUTPUT_REGISTER 0
-#define BUTTON_PIO_CAPTURE 1
-#define BUTTON_PIO_DATA_WIDTH 4
-#define BUTTON_PIO_DO_TEST_BENCH_WIRING 0
-#define BUTTON_PIO_DRIVEN_SIM_VALUE 0
-#define BUTTON_PIO_EDGE_TYPE FALLING
-#define BUTTON_PIO_FREQ 50000000
-#define BUTTON_PIO_HAS_IN 1
-#define BUTTON_PIO_HAS_OUT 0
-#define BUTTON_PIO_HAS_TRI 0
-#define BUTTON_PIO_IRQ_TYPE EDGE
-#define BUTTON_PIO_RESET_VALUE 0
-
-/*
- * Macros for device 'mar_pio', class 'altera_avalon_pio'
- * The macros are prefixed with 'MAR_PIO_'.
- * The prefix is the slave descriptor.
- */
-#define MAR_PIO_COMPONENT_TYPE altera_avalon_pio
-#define MAR_PIO_COMPONENT_NAME mar_pio
-#define MAR_PIO_BASE 0x100d0
-#define MAR_PIO_SPAN 16
-#define MAR_PIO_END 0x100df
-#define MAR_PIO_BIT_CLEARING_EDGE_REGISTER 0
-#define MAR_PIO_BIT_MODIFYING_OUTPUT_REGISTER 0
-#define MAR_PIO_CAPTURE 0
-#define MAR_PIO_DATA_WIDTH 11
-#define MAR_PIO_DO_TEST_BENCH_WIRING 0
-#define MAR_PIO_DRIVEN_SIM_VALUE 0
-#define MAR_PIO_EDGE_TYPE NONE
-#define MAR_PIO_FREQ 50000000
-#define MAR_PIO_HAS_IN 0
-#define MAR_PIO_HAS_OUT 1
-#define MAR_PIO_HAS_TRI 0
-#define MAR_PIO_IRQ_TYPE NONE
-#define MAR_PIO_RESET_VALUE 0
-
-/*
- * Macros for device 'mbr_pio', class 'altera_avalon_pio'
- * The macros are prefixed with 'MBR_PIO_'.
- * The prefix is the slave descriptor.
- */
-#define MBR_PIO_COMPONENT_TYPE altera_avalon_pio
-#define MBR_PIO_COMPONENT_NAME mbr_pio
-#define MBR_PIO_BASE 0x100e0
-#define MBR_PIO_SPAN 16
-#define MBR_PIO_END 0x100ef
-#define MBR_PIO_BIT_CLEARING_EDGE_REGISTER 1
-#define MBR_PIO_BIT_MODIFYING_OUTPUT_REGISTER 0
-#define MBR_PIO_CAPTURE 1
-#define MBR_PIO_DATA_WIDTH 8
-#define MBR_PIO_DO_TEST_BENCH_WIRING 0
-#define MBR_PIO_DRIVEN_SIM_VALUE 0
-#define MBR_PIO_EDGE_TYPE RISING
-#define MBR_PIO_FREQ 50000000
-#define MBR_PIO_HAS_IN 1
-#define MBR_PIO_HAS_OUT 1
-#define MBR_PIO_HAS_TRI 0
-#define MBR_PIO_IRQ_TYPE EDGE
-#define MBR_PIO_RESET_VALUE 15
+#define INSTRUCTION_COMPONENT_TYPE altera_avalon_pio
+#define INSTRUCTION_COMPONENT_NAME instruction
+#define INSTRUCTION_BASE 0x10080
+#define INSTRUCTION_SPAN 16
+#define INSTRUCTION_END 0x1008f
+#define INSTRUCTION_BIT_CLEARING_EDGE_REGISTER 0
+#define INSTRUCTION_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define INSTRUCTION_CAPTURE 0
+#define INSTRUCTION_DATA_WIDTH 11
+#define INSTRUCTION_DO_TEST_BENCH_WIRING 0
+#define INSTRUCTION_DRIVEN_SIM_VALUE 0
+#define INSTRUCTION_EDGE_TYPE NONE
+#define INSTRUCTION_FREQ 50000000
+#define INSTRUCTION_HAS_IN 0
+#define INSTRUCTION_HAS_OUT 1
+#define INSTRUCTION_HAS_TRI 0
+#define INSTRUCTION_IRQ_TYPE NONE
+#define INSTRUCTION_RESET_VALUE 0
 
 /*
  * Macros for device 'jtag_uart', class 'altera_avalon_jtag_uart'
