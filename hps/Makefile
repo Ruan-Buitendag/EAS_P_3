@@ -1,6 +1,5 @@
 #
-TARGET = Prac2
-
+TARGET = Prac3
 
 #
 CROSS_COMPILE = arm-linux-gnueabihf-
