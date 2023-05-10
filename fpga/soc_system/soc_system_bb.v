@@ -1,8 +1,6 @@
 
 module soc_system (
-	button_pio_external_connection_export,
 	clk_clk,
-	dipsw_pio_external_connection_export,
 	hps_0_f2h_cold_reset_req_reset_n,
 	hps_0_f2h_debug_reset_req_reset_n,
 	hps_0_f2h_stm_hw_events_stm_hwevents,
@@ -56,7 +54,6 @@ module soc_system (
 	hps_0_hps_io_hps_io_gpio_inst_GPIO53,
 	hps_0_hps_io_hps_io_gpio_inst_GPIO54,
 	hps_0_hps_io_hps_io_gpio_inst_GPIO61,
-	led_pio_external_connection_export,
 	memory_mem_a,
 	memory_mem_ba,
 	memory_mem_ck,
@@ -75,9 +72,7 @@ module soc_system (
 	memory_oct_rzqin,
 	reset_reset_n);	
 
-	input	[3:0]	button_pio_external_connection_export;
 	input		clk_clk;
-	input	[3:0]	dipsw_pio_external_connection_export;
 	input		hps_0_f2h_cold_reset_req_reset_n;
 	input		hps_0_f2h_debug_reset_req_reset_n;
 	input	[27:0]	hps_0_f2h_stm_hw_events_stm_hwevents;
@@ -131,7 +126,6 @@ module soc_system (
 	inout		hps_0_hps_io_hps_io_gpio_inst_GPIO53;
 	inout		hps_0_hps_io_hps_io_gpio_inst_GPIO54;
 	inout		hps_0_hps_io_hps_io_gpio_inst_GPIO61;
-	output	[7:0]	led_pio_external_connection_export;
 	output	[14:0]	memory_mem_a;
 	output	[2:0]	memory_mem_ba;
 	output		memory_mem_ck;
