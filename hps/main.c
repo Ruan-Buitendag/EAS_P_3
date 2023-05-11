@@ -10,123 +10,167 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 /* HPS Register address */
 #define HW_REGS_BASE ( ALT_STM_OFST )
 #define HW_REGS_SPAN ( 0x04000000 )
 #define HW_REGS_MASK ( HW_REGS_SPAN - 1 )
 
-/* HPS IO */
-#define USER_IO_DIR     (0x01000000)
-#define BIT_LED         (0x01000000)
-#define BUTTON_MASK     (0x02000000)
+char instruction_set[5][4] = {"LDA", "STA", "ADD", "SUB", "BRA"};
+
+typedef enum
+{
+	FALSE,
+	TRUE
+} boolean_t;
 
 void startup_display(void)
 {
-	printf(" _____    _    ____    _  _   _  ___\n"); 
- 	printf("| ____|  / \\  / ___|  | || | / |/ _ \\ \n");
- 	printf("|  _|   / _ \\ \\___ \\  | || |_| | | | |\n");
- 	printf("| |___ / ___ \\ ___) | |__   _| | |_| |\n");
- 	printf("|_____/_/   \\_\\____/     |_| |_|\\___/ \n");
+	printf("\n");
+	printf("  /$$    /$$  /$$$$$$         /$$$$$$                  /$$          \n");
+	printf(" | $$   | $$ /$$__  $$       /$$__  $$                | $$          \n");
+	printf(" | $$   | $$| $$  \\__/      | $$  \\__/  /$$$$$$   /$$$$$$$  /$$$$$$ \n");
+	printf(" |  $$ / $$/|  $$$$$$       | $$       /$$__  $$ /$$__  $$ /$$__  $$\n");
+	printf("  \\  $$ $$/  \\____  $$      | $$      | $$  \\ $$| $$  | $$| $$$$$$$$\n");
+	printf("   \\  $$$/   /$$  \\ $$      | $$    $$| $$  | $$| $$  | $$| $$_____/\n");
+	printf("    \\  $/   |  $$$$$$/      |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$\n");
+	printf("     \\_/     \\______/        \\______/  \\______/  \\_______/ \\_______/\n");
+    printf("\n\tVersion 0.0\n");                                         
 	
-	printf("------------------------------");
-	printf("\n EAS 411 Practical 2 Group 11\n");
-	printf("------------------------------\n");
 }
 
-void display_confirmation_message(char read_or_write, char full_or_half_word, char msb_or_lsb, uint16_t chip_group, uint16_t sub_chip, uint16_t buffer)
-{
-	printf("\nYour command is: ");
-	if (read_or_write == 'r')
-		printf("READ ");
-	else
-		printf("WRITE ");
-	
-	if (full_or_half_word == 'f')
-		printf("WORD ");
-	else
-	{
-		printf("NIBBLE ");
-		if (msb_or_lsb == 'm')
-			printf("(MSB) ");
-		else
-			printf("(LSB) ");
-	}
-		
-	if (read_or_write == 'r')
-		printf("from ");
-	else
-		printf("to ");
-	printf("Chip Group %d, ", chip_group);
-	printf("Buffer [%d, %d]\n", sub_chip, buffer);
 
-}
-
-uint16_t create_mar_code(char read_or_write, char full_or_half_word, char msb_or_lsb, uint16_t chip, uint16_t buffer)
+uint16_t create_instruction(uint16_t memory_location, char* user_instruction )
 {
 	/*
-	|   bit 10   |  bits 9 - 5    |   bits 4 - 2     |       bit 1       |    bit 0   |
-	| read/write | chip selection | buffer selection | full or half word | msb or lsb |
-
+	|    bits 10 - 8      |      bits 7 - 5     |      bit 4      | bits 3 - 0 |
+	|   Memory Location   |    Operation code   | Addressing Mode |   Operand  |
 	*/
-	uint16_t mar_code = 0;
-	uint16_t read_write_bit = 0, chip_selection = 0, buffer_selection = 0, full_half_bit = 0, msb_lsb_bit = 0;
-	/* If a write was requested, bit 11 would be 1 */
-	if (read_or_write == 'w')
-		read_write_bit = (1<<10);
-	
 
-	chip_selection = (uint16_t)(chip << 5);
-	buffer_selection = (uint16_t)(buffer << 2);
-	
-	if (full_or_half_word == 'h')
-		full_half_bit = (1<<1);
-	
-	if (msb_or_lsb == 'm')
-		msb_lsb_bit = 1;
-	
-	mar_code = read_write_bit | chip_selection | buffer_selection | full_half_bit | msb_lsb_bit;
+	/* The input is validated by "syntax_checker" and therefore assumed to be correct */
+	uint16_t instruction = 0x0000;
 
-	return mar_code;
+	/* Shift the given memory location into bits 8 to 10*/
+	instruction |= (memory_location << 8);
+
+	/* Retrieve op code value and shift that to bits 5 - 7 */
+	char op_code[4];
+
+	int i;
+	for (i = 0; i < 3; i++)
+		op_code[i] = user_instruction[i];
+	
+	op_code[3] = '\0';
+
+	int check_op_code;
+	for (i = 0; i < 5; i++)
+	{
+		check_op_code = strcmp(op_code, instruction_set[i]);
+		if (check_op_code == 0)
+			break;
+	}
+
+	instruction |= (i << 5);
+
+	/* Shift the addressing mode into bits 4 */
+	uint8_t number_index;
+	if (user_instruction[4] == '$')
+	{
+		instruction |= (1 << 4);
+		number_index = 5;
+	}
+	else
+	{
+		number_index = 4;
+	}
+	
+	uint8_t operand = atoi(&user_instruction[number_index]);
+
+	instruction |= operand;
+
+	return instruction;
+}
+
+boolean_t syntax_checker(char * user_instruction)
+{
+	
+	uint8_t input_length = strlen(user_instruction);
+	if (input_length < 5)
+	{
+		printf("Invalid Instruction Length\n");
+		return FALSE;
+	}
+
+	/* Check if the inputted op code is valid */
+	char op_code[4];
+
+	int i;
+	for (i = 0; i < 3; i++)
+		op_code[i] = user_instruction[i];
+	
+	op_code[3] = '\0';
+
+	int check_op_code;
+	for (i = 0; i < 5; i++)
+	{
+		check_op_code = strcmp(op_code, instruction_set[i]);
+		if (check_op_code == 0)
+			break;	
+	}
+
+	if (check_op_code != 0)
+		{
+			printf("| ERROR: %s not an op code\n", op_code);
+			return FALSE;
+		} 
+
+	if (user_instruction[3] != ' ')
+	{
+		printf("| ERROR: Ensure there is a SPACE after the Op Code\n");
+		return FALSE;
+	}
+
+	uint8_t number_index;
+	/* If Absolute Addressing was inputted */
+	if (user_instruction[4] != '$')
+	{
+		/* Check if the character inputted is a number between 0-9 */
+		if (((uint8_t)user_instruction[4] < 48) || ((uint8_t)user_instruction[4] > 57))
+		{
+			/* If the character was not a number, then the addressing mode symbol was incorrect*/
+			printf("| ERROR: Character \'%c\' is not an addressing mode specifier\n", user_instruction[4]);
+			return FALSE;
+		}
+		number_index = 4;
+	}
+	else
+	{
+		number_index = 5;		
+	}
+
+	uint8_t input_operand = atoi(&user_instruction[number_index]);
+	if (input_operand > 15 )
+	{
+		printf("| ERROR: Ensure that the value you inputted is between 0 and 15\n");
+		return FALSE;
+	}
+	
+	return TRUE;
 }
 
 int main() {
 
 	void *virtual_base;
 	int fd;
-
-	/* FPGA GPIO addresses */
-	void *fpga_keys_address;
 	
 	/* FPGA MAR and MBR addresses*/
-	void *fpga_mar_address, *fpga_mbr_address;
+	void *fpga_boot_loader_address, *fpga_instruction_address;
 
-	/* HPS GPIO Addresses */
-	void *hps_key_address;
-	
-	/* HPS GPIO direction address */
-	void *hps_gpio_direction_address;
+	char user_input[8][8], input_character;
 
-	/* HPS input value */
-	uint32_t  hps_key_input;
+	uint16_t instructions[8];
 
-	/* FPGA input values */
-	uint32_t  fpga_keys_input;
-
-	/* User Input values */
-	char read_write_input = 'r', half_full_input  = 'f', most_least_input = 'l';
 	
-	/* Memory Write values */
-	char write_input[5]  = "0000";
-	uint8_t mbr_value = 0;
-	uint16_t mar_value = 0;
-	
-	/* Memory location and chip selection values*/
-	int memory_location_input;
-	uint8_t chip_selection, buffer_selection, chip_group, sub_chip;
-	
-	char* binary_lookup[16] = {"0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1011","1110","1111"};
-	
-
 	/* Memory Mapping using the Sotware API  */ 
 	if( ( fd = open( "/dev/mem", ( O_RDWR | O_SYNC ) ) ) == -1 ) 
 	{
@@ -145,131 +189,79 @@ int main() {
 	}
 	
 	/* Retreiving the fpga PIO addresses from hps_0.h */
-	fpga_keys_address   = virtual_base + ( ( unsigned long )( ALT_LWFPGASLVS_OFST + BUTTON_PIO_BASE )  & ( unsigned long )( HW_REGS_MASK ) );
-	fpga_mar_address    = virtual_base + ( ( unsigned long )( ALT_LWFPGASLVS_OFST + MAR_PIO_BASE )     & ( unsigned long )( HW_REGS_MASK ) );
-	fpga_mbr_address    = virtual_base + ( ( unsigned long )( ALT_LWFPGASLVS_OFST + MBR_PIO_BASE )     & ( unsigned long )( HW_REGS_MASK ) );
-	
-	/* Retreiving the hps PIO addresses from soc_cv_av/socal/hps.h */
-	hps_gpio_direction_address 	= virtual_base + ( ( uint32_t )( ALT_GPIO1_SWPORTA_DDR_ADDR ) & ( uint32_t )( HW_REGS_MASK ) );
-	hps_key_address 			= virtual_base + ( ( uint32_t )( ALT_GPIO1_EXT_PORTA_ADDR )   & ( uint32_t )( HW_REGS_MASK ) );
+	fpga_boot_loader_address   = virtual_base + ( ( unsigned long )( ALT_LWFPGASLVS_OFST + BOOT_LOADER_BASE )  & ( unsigned long )( HW_REGS_MASK ) );
+	fpga_instruction_address   = virtual_base + ( ( unsigned long )( ALT_LWFPGASLVS_OFST + INSTRUCTION_BASE )  & ( unsigned long )( HW_REGS_MASK ) );
 	
 	/* Startup Display */
 	startup_display();
 	
-	/* Setting up the direction of the HPS GPIO pins: LED->OUTPUT & KEY->INPUT */ 
-	alt_setbits_word( hps_gpio_direction_address , USER_IO_DIR );	
-	
 	/* Main loop */
 	while( 1 ) 
 	{
-		/* Wait for the HPS button to be pressed by the user */
-		printf("\n\t\tPRESS THE HPS KEY TO PERFORM A READ/WRITE!\n");
-		hps_key_input 	= alt_read_word( hps_key_address );
-		while (!(~hps_key_input & BUTTON_MASK))
-		{
-			hps_key_input 	= alt_read_word( hps_key_address );
-		}
-		
-		/* Begin line of questioning */
-		while (1)
-		{
-			printf("\nRead or write (r/w)? ");
-			scanf(" %c", &read_write_input);
-			if (read_write_input == 'r' || read_write_input == 'w')
-				break;
-		}
-		while(1)
-		{
-			printf("Half or full word access (h/f)? ");
-			scanf(" %c", &half_full_input);
-			if (half_full_input == 'h' || half_full_input == 'f')
-				break;
-		}
-		if (half_full_input == 'h')
-		{
-			while (1)
-			{
-				printf("MSB or LSB (m/l)? ");
-				scanf(" %c", &most_least_input);
-				if (most_least_input == 'm' || most_least_input == 'l')
-					break;
-			}
-		}
-		
-		while (1)
-		{
-			printf("Enter the memory location (0-255): ");
-			scanf(" %d", &memory_location_input);
-			if (memory_location_input >=0 && memory_location_input < 256)
-				break;
-		}
-		
-		/* Determine which chip and buffer the memory location belongs to */
-		chip_selection   = (uint8_t)((memory_location_input / 8));
-		chip_group       = (uint8_t)((chip_selection / 8));
-		sub_chip		 = (uint8_t)((chip_selection % 8));
-		buffer_selection = (uint8_t)((memory_location_input % 8));
+		/* Set the Bootloader Flag low to indicate that a program is being loaded */
+		*(uint32_t *)fpga_boot_loader_address = 0x0;
 
-		/* Display the user input */
-		display_confirmation_message(read_write_input, half_full_input, most_least_input, chip_group + 1, sub_chip + 1, buffer_selection + 1);
-
-		/* Wait 1 second */
-		usleep(1000*1000);
-
-		printf("\n\t\tPRESS THE FPGA KEY 1 TO CONFIRM INPUT\n");
-		fpga_keys_input = (~alt_read_word( fpga_keys_address ) & 0x2) >> 1;
+		printf(" _______\n");                                    
+		printf("|Prac3.s|___________________________________________________________\n");
+		printf("| \n");
 		
-		while (!fpga_keys_input) 
-		{
-			fpga_keys_input = (~alt_read_word( fpga_keys_address ) & 0x2) >> 1;
-		}
 
-		/* Creating a MAR code for reading the position currently stored in the requested memory address */
-		mar_value = create_mar_code('r', half_full_input, most_least_input, chip_selection, buffer_selection);
 		
-		*(uint32_t *)fpga_mar_address = mar_value;
-		
-		/* Reading the value currently stored in the requested memory address out of the MBR address */
-		mbr_value = alt_read_word( fpga_mbr_address );
+		uint8_t instruction_counter, instruction_characters;
+		boolean_t correct_syntax;
 
-		if (half_full_input == 'h')
+		for (instruction_counter = 0; instruction_counter < 8; instruction_counter++)
 		{
-			printf("\nCurrent value in Chip Group %d, Buffer [%d, %d]:  %s\n", chip_group + 1, sub_chip + 1, buffer_selection + 1, binary_lookup[mbr_value]);
-		}
-		else
-		{
-			printf("\nCurrent value in Chip Group %d, Buffer [%d, %d]:  %c\n", chip_group + 1, sub_chip + 1, buffer_selection + 1, mbr_value);
-		}
-		/* Wait 1 second */
-		usleep(1000*1000);
-
-		/* If a write was requested */
-		if (read_write_input == 'w')
-		{
-			/* Create the MAR code to write to the inputted memory location */
-			mar_value = create_mar_code('w', half_full_input, most_least_input, chip_selection, buffer_selection);
+			/* Create sudo line numbering for the "IDE" */
+			printf("|   %d\t ", instruction_counter + 1);
 			
-			/* Request data from the user to be written into memory */
-			if (half_full_input == 'h')
-			{
-				printf("Input 4 digit binary value: ");
-				scanf("%4s", write_input);
-				mbr_value = (uint8_t)(strtol(write_input, NULL, 2) & 0xF);
-			}
-			else
-			{
-				printf("Input lowercase ASCII characters only [a..z]: ");
-				scanf(" %c", write_input);	
-				mbr_value = (uint8_t)write_input[0];
-			}
-			
-			/* Set the MAR register (Wire) to indicate a write */
-			*(uint32_t *)fpga_mar_address = mar_value;
+			/* A blank line indicates the end of the program */
+			input_character = getchar ();
+			if (input_character == '\n')
+				break;
 
-			/* Set the MBR buffer (wire) to the user input value to be written */
-			*(uint32_t *)fpga_mbr_address = mbr_value;
+			/* For input instruction of variable size, each character is read and saved individually*/
+			instruction_characters = 0;
+
+			while(input_character != '\n')
+			{
+				user_input[instruction_counter][instruction_characters] = input_character;
+				instruction_characters++;
+				input_character = getchar();
+			}
+
+			user_input[instruction_counter][instruction_characters] ='\0';
 			
+			/* Check in inputted instruction is valid */
+			correct_syntax = syntax_checker(user_input[instruction_counter]);
+
+			/* If the syntax is incorrect, give the user another chance to input */
+			if (correct_syntax == FALSE)
+			{
+				instruction_counter--;
+			}
+			else 
+			{
+				instructions[instruction_counter] = create_instruction(instruction_counter, user_input[instruction_counter]);
+			}	
 		}
+		printf("|___________________________________________________________________\n");
+		
+		
+		/* Input the Instructions directly into the program memory */
+		int i;
+		for (i = 0; i < instruction_counter; i++)
+		{
+			*(uint32_t *)fpga_instruction_address = instructions[i];	
+			usleep(1000);
+		}
+		
+		/* Set the Bootloader Flag High to indicate that a program is being loaded */
+		*(uint32_t *)fpga_boot_loader_address = 0x1;
+		
+		printf("\n\t\t\tAssembler Complete\n\n");
+		
+		break;
 
 	}
 	
