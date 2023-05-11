@@ -120,7 +120,7 @@ boolean_t syntax_checker(char * user_instruction)
 
 	if (check_op_code != 0)
 		{
-			printf("| ERROR: %s not an op code\n", op_code);
+			printf("| ERROR: %s is not an op code\n", op_code);
 			return FALSE;
 		} 
 
@@ -252,7 +252,7 @@ int main() {
 		int i;
 		for (i = 0; i < instruction_counter; i++)
 		{
-			*(uint32_t *)fpga_instruction_address = instructions[i];	
+			*(uint32_t *)fpga_instruction_address = instructions[i];
 			usleep(1000);
 		}
 		
