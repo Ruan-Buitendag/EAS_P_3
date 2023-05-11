@@ -8,13 +8,13 @@ module Memory(
 
 );
 
-reg [7:0] MemoryArray[0:16];
+reg [7:0] MemoryArray[0:15];
 
 reg [7:0] tempOutput;
 
 assign ReadFromMemory = tempOutput;
 
-always @(posedge(clk)):
+always @(posedge(clk))
 begin
 
 	if(ReadOrWrite) begin
