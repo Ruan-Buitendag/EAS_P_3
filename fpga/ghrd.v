@@ -140,7 +140,11 @@ module ghrd(
   wire		  boot_loader_flag;
   wire [10:0] instruction;
 // connection of internal logics
-  assign LED[7:1] = fpga_led_internal;
+//  assign LED[7:1] = fpga_led_internal;\
+
+  wire [7:0] tempLED;
+  assign LED[7:0] = tempLED;
+
   assign fpga_clk_50=FPGA_CLK1_50;
   assign stm_hw_events    = {{15{1'b0}}, SW, fpga_led_internal, fpga_debounced_buttons};
 
@@ -287,6 +291,34 @@ altera_edge_detector pulse_debug_reset (
   defparam pulse_debug_reset.EDGE_TYPE = 1;
   defparam pulse_debug_reset.IGNORE_RST_WHILE_BUSY = 1;
 
+  wire slowclock;
   
+  wire [3:0] Address;
+  assign Address = (boot_loader_flag) ? 4'b0 : {1'b0, instruction[10:8]};
+
+  wire [8:15] LSBs;
+  wire [7:0] D0;
+  
+  assign tempLED = (SW[0]) ? D0: LSBs;
+	
+CPU OurCPU (
+	.WriteToMemory(instruction[7:0]),
+	.BootLoadAddress(Address),
+	.BootLoad(~boot_loader_flag),
+	
+	.clk(fpga_clk_50),
+	.slowclk(slowclock),
+	
+	.LSBs(LSBs),
+	.D0(D0)
+); 
+
+
+
+ClockDivider d(
+	.clk(fpga_clk_50),
+	.clk_out(slowclock)
+);
+
   
 endmodule
