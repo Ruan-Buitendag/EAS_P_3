@@ -294,11 +294,11 @@ altera_edge_detector pulse_debug_reset (
  wire [3:0] Address;
  assign Address = (boot_loader_flag) ? SW[3:0] : {1'b0, instruction[10:8]};
    
-Memory MainMemory (
+CPU OurCPU (
 	.WriteToMemory(instruction[7:0]),
 	.ReadFromMemory(tempLED[7:0]),
-	.Address(Address),
-	.ReadOrWrite(~boot_loader_flag),
+	.BootLoadAddress(Address),
+	.BootLoad(~boot_loader_flag),
 	.clk(fpga_clk_50)
 ); 
   
