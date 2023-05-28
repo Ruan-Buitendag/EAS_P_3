@@ -8,9 +8,13 @@ module Memory(
 	input [3:0] BootLoadAddress,
 	
 	input clk,
-	input BootLoad
+	input BootLoad, 
+	
+	output [8:15] LSBs
 
 );
+
+
 
 reg [7:0] MemoryArray[0:15];
 
@@ -18,6 +22,20 @@ reg [7:0] tempBusOutput;
 reg [7:0] tempHPSOutput;
 
 assign ReadFromMemory = tempHPSOutput;
+
+assign LSBs = tempLSBs;
+
+
+reg [7:0] tempLSBs;
+
+integer i;
+
+always @(*) begin
+ for (i = 8; i <= 15; i = i + 1)
+	tempLSBs[i-8] = MemoryArray[i][0];
+end
+
+
 
 assign DataBus = (ControlSignals[7] && !BootLoad) ? tempBusOutput : 1'bz;
 

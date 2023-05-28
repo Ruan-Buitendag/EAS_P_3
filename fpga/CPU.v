@@ -7,29 +7,25 @@ module CPU(
 	input slowclk,
 	input BootLoad,
 	
-//	output [7:0] bus, 
-	output [15:0] cs, 
-	output [2:0] state,
-	output [2:0] mc,
-	output [7:0] IRs,
-	output [7:0] D0
+	output [7:0] D0, 
 	
+	
+	output [8:15] LSBs
 	
 
 );
 
 wire [7:0] DataBus;
 wire [15:0] ControlSignals;
+
 wire [7:0] IRtoCU;
 wire [7:0] D0toALU;
 wire [4:0] MARtoMemory;
+wire [8:15] LSBsFromMemory;
 
-//wire slowclock;
-
-//assign bus = DataBus;
-assign cs = ControlSignals;
-assign IRs = IRtoCU;
 assign D0 = D0toALU;
+
+assign LSBs = LSBsFromMemory;
 
 CU ControlUnit(
 	.ControlSignals(ControlSignals), 
@@ -111,7 +107,9 @@ Memory RAM(
 	.BootLoadAddress(BootLoadAddress),
 	
 	.clk(clk),
-	.BootLoad(BootLoad)
+	.BootLoad(BootLoad),
+	
+	.LSBs(LSBsFromMemory)
 
 );
 
