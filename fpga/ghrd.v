@@ -293,13 +293,25 @@ altera_edge_detector pulse_debug_reset (
 
  wire [3:0] Address;
  assign Address = (boot_loader_flag) ? SW[3:0] : {1'b0, instruction[10:8]};
+ 
    
+wire slowclock;
+	
 CPU OurCPU (
 	.WriteToMemory(instruction[7:0]),
-	.ReadFromMemory(tempLED[7:0]),
+	.ReadFromMemory({lazyconnection, tempLED[6:0]}),
 	.BootLoadAddress(Address),
 	.BootLoad(~boot_loader_flag),
-	.clk(fpga_clk_50)
+	.clk(fpga_clk_50),
+	.slowclk(slowclock)
 ); 
+
+ClockDivider d(
+	.clk(fpga_clk_50),
+	.clk_out(slowclock)
+);
+
+assign tempLED[7] = slowclock;
+wire lazyconnection;
   
 endmodule

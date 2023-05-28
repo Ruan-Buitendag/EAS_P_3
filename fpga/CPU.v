@@ -4,9 +4,10 @@ module CPU(
 	input [3:0] BootLoadAddress,
 	
 	input clk,
+	input slowclk,
 	input BootLoad,
 	
-	output [7:0] bus, 
+//	output [7:0] bus, 
 	output [15:0] cs, 
 	output [2:0] state,
 	output [2:0] mc,
@@ -23,9 +24,9 @@ wire [7:0] IRtoCU;
 wire [7:0] D0toALU;
 wire [4:0] MARtoMemory;
 
-wire slowclock;
+//wire slowclock;
 
-assign bus = DataBus;
+//assign bus = DataBus;
 assign cs = ControlSignals;
 assign IRs = IRtoCU;
 assign D0 = D0toALU;
@@ -97,6 +98,8 @@ PC ProgramCounter(
 	.reset(BootLoad)
 );
 
+
+
 Memory RAM(
 	.ControlSignals(ControlSignals),
 	.DataBus(DataBus),
@@ -112,10 +115,7 @@ Memory RAM(
 
 );
 
-ClockDivider d(
-	.clk(clk),
-	.clk_out(slowclock)
-);
+
 
 
 
