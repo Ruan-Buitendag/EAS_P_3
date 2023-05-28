@@ -97,7 +97,7 @@ boolean_t syntax_checker(char * user_instruction)
 	uint8_t input_length = strlen(user_instruction);
 	if (input_length < 5)
 	{
-		printf("Invalid Instruction Length\n");
+		printf("| ERROR: Invalid Instruction Length\n");
 		return FALSE;
 	}
 
@@ -156,6 +156,36 @@ boolean_t syntax_checker(char * user_instruction)
 	}
 	
 	return TRUE;
+}
+
+void print_binary(int value, int line)
+{
+	if (value == 0) {
+        printf("0\n");
+        return;
+    }
+   
+   	// Stores binary representation of number.
+   	uint8_t binaryNum[11] = {0}; // Assuming 32 bit integer.
+   	int i;
+   
+   	for (i=0 ;value > 0; i++)
+	{
+      binaryNum[i] = value % 2;
+      value /= 2;
+   	}
+   
+   // Printing array in reverse order.
+   printf("%d: ", line);
+   int j = 0;
+   for (j = 10; j >= 0; j--)
+   {
+		if (j == 7 || j == 4 || j == 3)
+			printf(" ");
+      printf("%d", binaryNum[j]);
+   }
+	
+	printf("\n");
 }
 
 int main() {
@@ -222,11 +252,14 @@ int main() {
 
 			/* For input instruction of variable size, each character is read and saved individually*/
 			instruction_characters = 0;
-
+			
 			while(input_character != '\n')
 			{
-				user_input[instruction_counter][instruction_characters] = input_character;
-				instruction_characters++;
+				if ((uint8_t)input_character > 31)
+				{
+					user_input[instruction_counter][instruction_characters] = input_character;
+					instruction_characters++;
+				}
 				input_character = getchar();
 			}
 
@@ -260,6 +293,14 @@ int main() {
 		*(uint32_t *)fpga_boot_loader_address = 0x1;
 		
 		printf("\n\t\t\tAssembler Complete\n\n");
+		printf(" --------------------------------------------------------------------------\n");
+		printf("|    bits 10 - 8      |      bits 7 - 5     |      bit 4      | bits 3 - 0 |\n");
+		printf("|   Memory Location   |    Operation code   | Addressing Mode |   Operand  |\n");
+		printf(" --------------------------------------------------------------------------\n");
+		for (i = 0; i < instruction_counter; i++)
+		{
+			print_binary(instructions[i], i+1);
+		}
 		
 		break;
 
