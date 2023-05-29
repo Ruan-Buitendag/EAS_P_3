@@ -2,16 +2,12 @@ module PC(
 	input [15:0] ControlSignals,	
 	inout [7:0] DataBus,
 		
-	output PCOut,	
-		
 	input clk, 
 	input reset
 	
 );
 
 reg [7:0] busInput;
-
-assign PCOut = busInput;
 
 assign DataBus = (ControlSignals[4]) ? busInput : 1'bz;
 

@@ -142,8 +142,8 @@ module ghrd(
 // connection of internal logics
 //  assign LED[7:1] = fpga_led_internal;\
 
-  wire [7:0] tempLED;
-  assign LED[7:0] = tempLED;
+  wire [7:0] connectionToLEDS;
+  assign LED[7:0] = connectionToLEDS;
 
   assign fpga_clk_50=FPGA_CLK1_50;
   assign stm_hw_events    = {{15{1'b0}}, SW, fpga_led_internal, fpga_debounced_buttons};
@@ -298,8 +298,60 @@ altera_edge_detector pulse_debug_reset (
 
   wire [8:15] LSBs;
   wire [7:0] D0;
+  wire [7:0] IR;
+  wire [7:0] PC;	
   
-  assign tempLED = (SW[0]) ? D0: LSBs;
+  reg [7:0] LEDOutputs;
+  
+  
+  assign connectionToLEDS = LEDOutputs;
+
+always @*
+begin
+	if(SW[3]) begin
+		LEDOutputs[7] = slowclock;
+		
+		case(SW[2:0])
+			3'b000: begin
+				LEDOutputs[6:0] = D0[6:0];			
+			end
+			
+			3'b001: begin
+				LEDOutputs[6:0] = LSBs[9:15];	
+			end
+			
+			3'b010: begin
+				LEDOutputs[6:0] = IR[6:0];	
+			end
+			
+			3'b011: begin
+				LEDOutputs[6:0] = PC[6:0];	
+			end		
+		
+		endcase
+		
+	end
+	else begin
+		case(SW[2:0])
+			3'b000: begin
+				LEDOutputs = D0;			
+			end
+			
+			3'b001: begin
+				LEDOutputs = LSBs[8:15];	
+			end
+			
+			3'b010: begin
+				LEDOutputs = IR;	
+			end
+			
+			3'b011: begin
+				LEDOutputs = PC;	
+			end
+		
+		endcase
+	end
+end
 	
 CPU OurCPU (
 	.WriteToMemory(instruction[7:0]),
@@ -310,7 +362,9 @@ CPU OurCPU (
 	.slowclk(slowclock),
 	
 	.LSBs(LSBs),
-	.D0(D0)
+	.D0(D0),
+	.IR(IR),
+	.PC(PC)
 ); 
 
 

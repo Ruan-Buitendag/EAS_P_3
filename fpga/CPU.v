@@ -8,8 +8,8 @@ module CPU(
 	input BootLoad,
 	
 	output [7:0] D0, 
-	
-	
+	output [7:0] IR,
+	output [7:0] PC,	
 	output [8:15] LSBs
 	
 
@@ -23,7 +23,11 @@ wire [7:0] D0toALU;
 wire [4:0] MARtoMemory;
 wire [8:15] LSBsFromMemory;
 
+wire [7:0] PCTOOut;
+
 assign D0 = D0toALU;
+assign IR = IRtoCU;
+assign PC = PCTOOut;
 
 assign LSBs = LSBsFromMemory;
 
@@ -89,6 +93,8 @@ MBR MemoryBufferRegister(
 PC ProgramCounter(
 	.ControlSignals(ControlSignals),
 	.DataBus(DataBus),
+	
+	.PCOut(PCTOOut),
 	
 	.clk(clk),
 	.reset(BootLoad)
